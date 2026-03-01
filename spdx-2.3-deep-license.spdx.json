@@ -1,0 +1,270 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "deep-license-demo-logback-deep",
+  "documentNamespace": "https://example.com/spdx/deep-license-demo-logback-deep-2026-03-01",
+  "creationInfo": {
+    "created": "2026-03-01T00:00:00Z",
+    "creators": [
+      "Tool: GitHub-Copilot-SPDX-Generator",
+      "Organization: Example Corp"
+    ],
+    "licenseListVersion": "3.22"
+  },
+  "documentDescribes": [
+    "SPDXRef-RootPackage"
+  ],
+  "packages": [
+    {
+      "name": "deep-license-demo",
+      "SPDXID": "SPDXRef-RootPackage",
+      "versionInfo": "1.0.0",
+      "downloadLocation": "NOASSERTION",
+      "supplier": "Organization: Example Corp",
+      "originator": "Organization: Example Corp",
+      "filesAnalyzed": false,
+      "primaryPackagePurpose": "APPLICATION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "description": "Demonstration project showcasing deep licenses in open source components.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:maven/com.example/deep-license-demo@1.0.0"
+        }
+      ]
+    },
+    {
+      "name": "logback-classic",
+      "SPDXID": "SPDXRef-Package-logback-classic",
+      "versionInfo": "1.4.0",
+      "downloadLocation": "https://repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.4.0/logback-classic-1.4.0.jar",
+      "supplier": "Organization: QOS.ch",
+      "originator": "Organization: QOS.ch",
+      "filesAnalyzed": true,
+      "primaryPackagePurpose": "LIBRARY",
+      "homepage": "https://logback.qos.ch",
+      "licenseConcluded": "(EPL-1.0 OR LGPL-2.1-only) AND Apache-2.0",
+      "licenseDeclared": "EPL-1.0 OR LGPL-2.1-only",
+      "licenseInfoFromFiles": [
+        "EPL-1.0",
+        "LGPL-2.1-only",
+        "Apache-2.0",
+        "MIT"
+      ],
+      "licenseComments": "The package declares dual licensing under EPL-1.0 and LGPL-2.1. However, deep license analysis of the source files reveals embedded code and notices carrying Apache-2.0 and MIT licenses within bundled utilities and compatibility shims. These are the 'deep licenses' not visible from the top-level POM declaration alone.",
+      "copyrightText": "Copyright (C) 1999-2024 QOS.ch Sàrl",
+      "summary": "Logback Classic module — a native SLF4J implementation.",
+      "description": "Logback is intended as a successor to the popular log4j project, picking up where log4j 1.x leaves off. This component has deep licenses: while the declared license is EPL-1.0 OR LGPL-2.1, scanning the actual JAR reveals Apache-2.0 and MIT licensed code embedded inside.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:maven/ch.qos.logback/logback-classic@1.4.0"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:qos:logback:1.4.0:*:*:*:*:*:*:*"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "NOASSERTION"
+        }
+      ],
+      "attributionTexts": [
+        "This package contains code originally from the Apache Software Foundation, licensed under Apache-2.0.",
+        "Portions of this package include MIT-licensed utility code from the SLF4J project."
+      ]
+    },
+    {
+      "name": "logback-core",
+      "SPDXID": "SPDXRef-Package-logback-core",
+      "versionInfo": "1.4.0",
+      "downloadLocation": "https://repo1.maven.org/maven2/ch/qos/logback/logback-core/1.4.0/logback-core-1.4.0.jar",
+      "supplier": "Organization: QOS.ch",
+      "originator": "Organization: QOS.ch",
+      "filesAnalyzed": true,
+      "primaryPackagePurpose": "LIBRARY",
+      "licenseConcluded": "(EPL-1.0 OR LGPL-2.1-only) AND Apache-2.0",
+      "licenseDeclared": "EPL-1.0 OR LGPL-2.1-only",
+      "licenseInfoFromFiles": [
+        "EPL-1.0",
+        "LGPL-2.1-only",
+        "Apache-2.0"
+      ],
+      "licenseComments": "Transitive dependency of logback-classic. Declared as EPL-1.0 / LGPL-2.1 dual-license, but deep scan reveals Apache-2.0 licensed code in bundled servlet and utility classes.",
+      "copyrightText": "Copyright (C) 1999-2024 QOS.ch Sàrl",
+      "description": "Core module of the Logback logging framework. Contains foundational classes reused by logback-classic. Deep license analysis shows Apache-2.0 code embedded in internal utility packages.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:maven/ch.qos.logback/logback-core@1.4.0"
+        }
+      ]
+    },
+    {
+      "name": "slf4j-api",
+      "SPDXID": "SPDXRef-Package-slf4j-api",
+      "versionInfo": "2.0.0",
+      "downloadLocation": "https://repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.0/slf4j-api-2.0.0.jar",
+      "supplier": "Organization: QOS.ch",
+      "originator": "Organization: QOS.ch",
+      "filesAnalyzed": false,
+      "primaryPackagePurpose": "LIBRARY",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "Copyright (C) 2004-2024 QOS.ch Sàrl",
+      "description": "The Simple Logging Facade for Java (SLF4J) API. Transitive dependency of logback-classic.",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:maven/org.slf4j/slf4j-api@2.0.0"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "fileName": "logback-classic-1.4.0.jar#ch/qos/logback/classic/Logger.java",
+      "SPDXID": "SPDXRef-File-Logger",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "NOASSERTION"
+        }
+      ],
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseConcluded": "EPL-1.0 OR LGPL-2.1-only",
+      "licenseInfoInFiles": [
+        "EPL-1.0",
+        "LGPL-2.1-only"
+      ],
+      "copyrightText": "Copyright (C) 1999-2024 QOS.ch Sàrl",
+      "comment": "Primary Logger class. Header declares EPL-1.0 / LGPL-2.1 — matches the top-level declared license."
+    },
+    {
+      "fileName": "logback-classic-1.4.0.jar#ch/qos/logback/classic/util/StatusViaSLF4JLoggerFactory.java",
+      "SPDXID": "SPDXRef-File-StatusViaSLF4J",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "NOASSERTION"
+        }
+      ],
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseConcluded": "MIT",
+      "licenseInfoInFiles": [
+        "MIT"
+      ],
+      "copyrightText": "Copyright (C) 2004-2024 QOS.ch Sàrl",
+      "comment": "DEEP LICENSE: This file inside logback-classic carries an MIT license header (originating from SLF4J utility code), which differs from the package-level declared license of EPL-1.0/LGPL-2.1."
+    },
+    {
+      "fileName": "logback-core-1.4.0.jar#ch/qos/logback/core/util/EnvUtil.java",
+      "SPDXID": "SPDXRef-File-EnvUtil",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "NOASSERTION"
+        }
+      ],
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseConcluded": "Apache-2.0",
+      "licenseInfoInFiles": [
+        "Apache-2.0"
+      ],
+      "copyrightText": "Copyright 2012 The Apache Software Foundation",
+      "comment": "DEEP LICENSE: This file within logback-core contains code derived from the Apache Software Foundation, carrying an Apache-2.0 license. This is a deep license not visible from the component's POM declaration."
+    },
+    {
+      "fileName": "logback-core-1.4.0.jar#ch/qos/logback/core/net/ssl/SSLConfigurableSocket.java",
+      "SPDXID": "SPDXRef-File-SSLConfigurable",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "NOASSERTION"
+        }
+      ],
+      "fileTypes": [
+        "SOURCE"
+      ],
+      "licenseConcluded": "EPL-1.0 OR LGPL-2.1-only",
+      "licenseInfoInFiles": [
+        "EPL-1.0",
+        "LGPL-2.1-only"
+      ],
+      "copyrightText": "Copyright (C) 1999-2024 QOS.ch Sàrl",
+      "comment": "Standard logback-core file matching the declared package license."
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-RootPackage"
+    },
+    {
+      "spdxElementId": "SPDXRef-RootPackage",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-logback-classic"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-logback-classic",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-logback-core"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-logback-classic",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-slf4j-api"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-logback-classic",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-Logger"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-logback-classic",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-StatusViaSLF4J"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-logback-core",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-EnvUtil"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-logback-core",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-File-SSLConfigurable"
+    }
+  ],
+  "hasExtractedLicensingInfos": [
+    {
+      "licenseId": "LicenseRef-deep-Apache-2.0-in-logback",
+      "extractedText": "Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License.",
+      "name": "Deep Apache-2.0 in Logback",
+      "comment": "Apache-2.0 license text found embedded within logback-core utility source files. This is a deep license — not declared at the package level but present in individual source files bundled into the JAR."
+    },
+    {
+      "licenseId": "LicenseRef-deep-MIT-in-logback",
+      "extractedText": "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.",
+      "name": "Deep MIT in Logback",
+      "comment": "MIT license text found embedded within logback-classic utility source files originating from SLF4J. This is a deep license — not declared at the package level but present in individual source files bundled into the JAR."
+    }
+  ]
+}
