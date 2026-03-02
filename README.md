@@ -25,6 +25,7 @@ Modern whiteboard for solo teaching, sketching, and screen-sharing.
 Follow [docs/setup-windows.md](docs/setup-windows.md) for prerequisite install.
 Session command cheat sheet: [docs/session-commands.md](docs/session-commands.md).
 Beta priority tracker: [docs/beta-priority.md](docs/beta-priority.md).
+Web app usage guide: [apps/web/README.md](apps/web/README.md).
 
 Quick start after installing prerequisites:
 
