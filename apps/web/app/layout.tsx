@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Java Teaching Whiteboard",
-  description: "Solo instructor whiteboard with Java code teaching panel"
+  title: "Free Drawing Whiteboard",
+  description: "Solo instructor whiteboard for free drawing and teaching"
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );

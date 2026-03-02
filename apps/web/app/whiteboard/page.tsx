@@ -1,58 +1,40 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import WhiteboardCanvas from "@/components/board/WhiteboardCanvas";
-import JavaPanel from "@/components/java/JavaPanel";
-import RecognitionAssistant from "@/components/board/RecognitionAssistant";
-import { loadSession } from "@/lib/storage/sessionStore";
+
+const DEFAULT_SESSION_TITLE = "Free Drawing Session";
+const SESSION_TITLE_STORAGE_KEY = "free-drawing-whiteboard:session-title";
 
 export default function WhiteboardPage() {
-  const [sessionTitle, setSessionTitle] = useState("Java Lesson Session");
-  const [code, setCode] = useState<string | undefined>(undefined);
+  const [sessionTitle, setSessionTitle] = useState(DEFAULT_SESSION_TITLE);
 
   useEffect(() => {
-    const snapshot = loadSession();
-    if (!snapshot) {
-      return;
+    const storedTitle = window.localStorage.getItem(SESSION_TITLE_STORAGE_KEY);
+
+    if (storedTitle) {
+      setSessionTitle(storedTitle);
     }
-    setSessionTitle(snapshot.title || "Java Lesson Session");
-    setCode(snapshot.code);
   }, []);
 
-  const lessonDate = useMemo(() => {
-    return new Intl.DateTimeFormat("en", {
-      dateStyle: "medium",
-      timeStyle: "short"
-    }).format(new Date());
-  }, []);
+  useEffect(() => {
+    window.localStorage.setItem(SESSION_TITLE_STORAGE_KEY, sessionTitle);
+  }, [sessionTitle]);
 
   return (
     <main className="flex h-dvh w-full flex-col bg-slate-100">
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-5 py-3">
-        <div className="flex min-w-0 flex-col">
-          <input
-            value={sessionTitle}
-            onChange={(event) => setSessionTitle(event.target.value)}
-            className="w-full max-w-xl rounded-md border border-transparent px-2 py-1 text-lg font-semibold text-slate-900 outline-none hover:border-slate-200 focus:border-slate-300"
-            aria-label="Session title"
-          />
-          <span className="text-xs text-slate-500">{lessonDate}</span>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-slate-600">
-          <span className="rounded-full bg-emerald-50 px-3 py-1 text-emerald-700">Solo mode</span>
-          <span className="rounded-full bg-blue-50 px-3 py-1 text-blue-700">Java focused</span>
-        </div>
+      <header className="border-b border-slate-200 bg-white px-4 py-3 lg:px-5">
+        <input
+          value={sessionTitle}
+          onChange={(event) => setSessionTitle(event.target.value)}
+          className="w-full max-w-xl rounded-md border border-transparent px-2 py-1 text-lg font-semibold text-slate-900 outline-none hover:border-slate-200 focus:border-slate-300"
+          aria-label="Session title"
+        />
       </header>
 
-      <section className="grid min-h-0 flex-1 grid-cols-[1fr_440px] gap-3 p-3">
-        <div className="min-h-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <section className="h-full min-h-0 flex-1 p-2 lg:p-3">
+        <div className="h-full min-h-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <WhiteboardCanvas />
-        </div>
-        <div className="grid min-h-0 grid-rows-[1fr_auto] gap-3">
-          <div className="min-h-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-            <JavaPanel sessionTitle={sessionTitle} initialCode={code} onCodeChange={setCode} />
-          </div>
-          <RecognitionAssistant />
         </div>
       </section>
     </main>

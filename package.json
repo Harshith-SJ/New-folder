@@ -1,5 +1,5 @@
 {
-  "name": "java-teaching-whiteboard",
+  "name": "free-drawing-whiteboard",
   "private": true,
   "packageManager": "pnpm@10.0.0",
   "scripts": {
@@ -7,7 +7,8 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "session:stop": "pnpm dlx kill-port 3000"
   },
   "devDependencies": {
     "prettier": "^3.4.2",

@@ -1,47 +1,84 @@
 export type Point = { x: number; y: number };
 
-export type ShapeKind = "line" | "rectangle" | "circle" | "arrow" | "freehand";
+export type ShapeKind = "rectangle" | "circle" | "arrow" | "freehand";
 
 export type ShapeRecognitionResult = {
   shape: ShapeKind;
   confidence: number;
 };
 
-function distance(a: Point, b: Point) {
-  return Math.hypot(a.x - b.x, a.y - b.y);
+const MIN_POINTS_FOR_RECOGNITION = 3;
+const MIN_POINTS_FOR_ARROW = 6;
+const MIN_SHAPE_WIDTH = 8;
+const MIN_SHAPE_HEIGHT = 8;
+const MIN_RECTANGLE_SIZE = 10;
+const MIN_ACCEPTED_CONFIDENCE = 0.6;
+
+type Bounds = {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+  width: number;
+  height: number;
+};
+
+function clamp01(value: number) {
+  return Math.max(0, Math.min(1, value));
 }
 
-function getBounds(points: Point[]) {
-  const xs = points.map((p) => p.x);
-  const ys = points.map((p) => p.y);
-  const minX = Math.min(...xs);
-  const maxX = Math.max(...xs);
-  const minY = Math.min(...ys);
-  const maxY = Math.max(...ys);
-  return { minX, maxX, minY, maxY, width: maxX - minX, height: maxY - minY };
+function euclideanDistance(firstPoint: Point, secondPoint: Point) {
+  return Math.hypot(firstPoint.x - secondPoint.x, firstPoint.y - secondPoint.y);
 }
 
-function mean(values: number[]) {
+function calculateBounds(points: Point[]): Bounds {
+  const xValues = points.map((point) => point.x);
+  const yValues = points.map((point) => point.y);
+  const minX = Math.min(...xValues);
+  const maxX = Math.max(...xValues);
+  const minY = Math.min(...yValues);
+  const maxY = Math.max(...yValues);
+
+  return {
+    minX,
+    maxX,
+    minY,
+    maxY,
+    width: maxX - minX,
+    height: maxY - minY
+  };
+}
+
+function average(values: number[]) {
   if (!values.length) {
     return 0;
   }
-  return values.reduce((a, b) => a + b, 0) / values.length;
+
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
-function detectLine(points: Point[]) {
-  const start = points[0];
-  const end = points[points.length - 1];
-  const chord = distance(start, end);
-  const pathLength = points.slice(1).reduce((sum, p, idx) => sum + distance(points[idx], p), 0);
-  if (!pathLength) {
+function calculateStrokeLength(points: Point[]) {
+  return points.slice(1).reduce((sum, point, index) => {
+    return sum + euclideanDistance(points[index], point);
+  }, 0);
+}
+
+function scoreLineLikeStroke(points: Point[]) {
+  const firstPoint = points[0];
+  const lastPoint = points[points.length - 1];
+  const directDistance = euclideanDistance(firstPoint, lastPoint);
+  const strokeLength = calculateStrokeLength(points);
+
+  if (!strokeLength) {
     return 0;
   }
-  return Math.min(1, chord / pathLength);
+
+  return clamp01(directDistance / strokeLength);
 }
 
-function detectCircle(points: Point[]) {
-  const bounds = getBounds(points);
-  if (bounds.width < 8 || bounds.height < 8) {
+function scoreCircle(points: Point[]) {
+  const bounds = calculateBounds(points);
+  if (bounds.width < MIN_SHAPE_WIDTH || bounds.height < MIN_SHAPE_HEIGHT) {
     return 0;
   }
 
@@ -50,72 +87,79 @@ function detectCircle(points: Point[]) {
     y: bounds.minY + bounds.height / 2
   };
 
-  const radii = points.map((p) => distance(p, center));
-  const avgRadius = mean(radii);
-  if (!avgRadius) {
+  const radii = points.map((point) => euclideanDistance(point, center));
+  const averageRadius = average(radii);
+  if (!averageRadius) {
     return 0;
   }
 
-  const avgDeviation = mean(radii.map((r) => Math.abs(r - avgRadius) / avgRadius));
-  const aspect = Math.min(bounds.width, bounds.height) / Math.max(bounds.width, bounds.height);
-  const closure = 1 - Math.min(1, distance(points[0], points[points.length - 1]) / Math.max(bounds.width, bounds.height));
-  return Math.max(0, Math.min(1, (1 - avgDeviation) * aspect * closure));
+  const averageRadiusDeviation = average(
+    radii.map((radius) => Math.abs(radius - averageRadius) / averageRadius)
+  );
+  const aspectRatio = Math.min(bounds.width, bounds.height) / Math.max(bounds.width, bounds.height);
+  const closure = 1 - clamp01(euclideanDistance(points[0], points[points.length - 1]) / Math.max(bounds.width, bounds.height));
+
+  return clamp01((1 - averageRadiusDeviation) * aspectRatio * closure);
 }
 
-function detectRectangle(points: Point[]) {
-  const bounds = getBounds(points);
-  if (bounds.width < 10 || bounds.height < 10) {
+function scoreRectangle(points: Point[]) {
+  const bounds = calculateBounds(points);
+  if (bounds.width < MIN_RECTANGLE_SIZE || bounds.height < MIN_RECTANGLE_SIZE) {
     return 0;
   }
 
-  const perimeter = 2 * (bounds.width + bounds.height);
-  const pathLength = points.slice(1).reduce((sum, p, idx) => sum + distance(points[idx], p), 0);
-  if (!pathLength) {
+  const expectedPerimeter = 2 * (bounds.width + bounds.height);
+  const strokeLength = calculateStrokeLength(points);
+  if (!strokeLength) {
     return 0;
   }
 
-  const closure = 1 - Math.min(1, distance(points[0], points[points.length - 1]) / Math.max(bounds.width, bounds.height));
-  const lengthFit = 1 - Math.min(1, Math.abs(pathLength - perimeter) / perimeter);
-  return Math.max(0, Math.min(1, closure * lengthFit));
+  const closure = 1 - clamp01(euclideanDistance(points[0], points[points.length - 1]) / Math.max(bounds.width, bounds.height));
+  const perimeterMatch = 1 - clamp01(Math.abs(strokeLength - expectedPerimeter) / expectedPerimeter);
+
+  return clamp01(closure * perimeterMatch);
 }
 
-function detectArrow(points: Point[]) {
-  if (points.length < 6) {
+function scoreArrow(points: Point[]) {
+  if (points.length < MIN_POINTS_FOR_ARROW) {
     return 0;
   }
 
-  const tailToHead = detectLine(points.slice(0, Math.floor(points.length * 0.7)));
-  const end = points[points.length - 1];
-  const prev = points[Math.floor(points.length * 0.85)];
-  const prePrev = points[Math.floor(points.length * 0.75)];
-  const angleA = Math.atan2(end.y - prev.y, end.x - prev.x);
-  const angleB = Math.atan2(end.y - prePrev.y, end.x - prePrev.x);
-  const spread = Math.abs(angleA - angleB);
-  const arrowHeadSignal = Math.min(1, spread / 1.2);
+  // First 70% should look roughly like a straight tail.
+  const tailLineScore = scoreLineLikeStroke(points.slice(0, Math.floor(points.length * 0.7)));
 
-  return Math.max(0, Math.min(1, tailToHead * arrowHeadSignal));
+  // Final section should create an angle spread (arrow head signal).
+  const lastPoint = points[points.length - 1];
+  const nearLastPoint = points[Math.floor(points.length * 0.85)];
+  const beforeNearLastPoint = points[Math.floor(points.length * 0.75)];
+
+  const angleToNearLast = Math.atan2(lastPoint.y - nearLastPoint.y, lastPoint.x - nearLastPoint.x);
+  const angleToBeforeNearLast = Math.atan2(lastPoint.y - beforeNearLastPoint.y, lastPoint.x - beforeNearLastPoint.x);
+  const angleSpread = Math.abs(angleToNearLast - angleToBeforeNearLast);
+  const arrowHeadSignal = clamp01(angleSpread / 1.2);
+
+  return clamp01(tailLineScore * arrowHeadSignal);
 }
 
-export function recognizeShape(points: Point[]): ShapeRecognitionResult {
-  if (points.length < 3) {
+export function recognizeShape(strokePoints: Point[]): ShapeRecognitionResult {
+  if (strokePoints.length < MIN_POINTS_FOR_RECOGNITION) {
     return { shape: "freehand", confidence: 0 };
   }
 
-  const line = detectLine(points);
-  const circle = detectCircle(points);
-  const rectangle = detectRectangle(points);
-  const arrow = detectArrow(points);
+  const circleScore = scoreCircle(strokePoints);
+  const rectangleScore = scoreRectangle(strokePoints);
+  const arrowScore = scoreArrow(strokePoints);
 
   const candidates: Array<ShapeRecognitionResult> = [
-    { shape: "line", confidence: line },
-    { shape: "circle", confidence: circle },
-    { shape: "rectangle", confidence: rectangle },
-    { shape: "arrow", confidence: arrow }
+    { shape: "circle", confidence: circleScore },
+    { shape: "rectangle", confidence: rectangleScore },
+    { shape: "arrow", confidence: arrowScore }
   ];
 
   const best = candidates.sort((a, b) => b.confidence - a.confidence)[0];
-  if (!best || best.confidence < 0.6) {
+  if (!best || best.confidence < MIN_ACCEPTED_CONFIDENCE) {
     return { shape: "freehand", confidence: best?.confidence ?? 0 };
   }
+
   return best;
 }
